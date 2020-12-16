@@ -81,7 +81,6 @@ namespace OrderGroupsHackathon
             }
 
             var boards = new List<int[,]>();
-            var l = new object();
             for (int val = 0; val < m.GetLength(0); val++)
             {
                 if (invalidValues[val]) continue;
@@ -92,18 +91,18 @@ namespace OrderGroupsHackathon
                 // advance in board
                 if (j < i)
                 {
-                    lock (l) { boards.AddRange(GetAbelianBoards(m, i, j + 1)); }
+                    boards.AddRange(GetAbelianBoards(m, i, j + 1));
                 }
                 else // j == i
                 {
                     if (i < (m.GetLength(0) - 1))
                     {
-                        lock (l) { boards.AddRange(GetAbelianBoards(m, i + 1, 1)); }
+                        boards.AddRange(GetAbelianBoards(m, i + 1, 1));
                     }
                     else
                     {
                         if (!IsAbelianBoardAssociative(m)) continue;
-                        lock (l) { boards.Add(m); }
+                        boards.Add(m);
                     }
                 }
             }
