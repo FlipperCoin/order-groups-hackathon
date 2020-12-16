@@ -269,7 +269,7 @@ def calc(n):
     #matrices = [matrix for matrix in matrices if filterAbel(matrix)]
     #matrices = [fillAbel(matrix, n) for matrix in matrices]
     #matrices = [matrix for matrix in matrices if isAss(matrix, n)]
-    print(len(filtered_eq))
+    return len(filtered_eq)
 
 def getAbelMatrices(matrix, n, i, j, l):
     for val in range(0,n):
@@ -325,8 +325,8 @@ def riddle4():
     print(compareMatrices(Z12Matrix, A4Matrix))
 
 def riddle3():
-    for n in range(4,6):
+    for n in range(4,7):
         print(f"n = {n}:")
-        calc(n)
+        print(calc(n))
 
 riddle3()
