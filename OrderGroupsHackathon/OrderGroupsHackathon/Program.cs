@@ -81,6 +81,7 @@ namespace OrderGroupsHackathon
             }
 
             var boards = new List<int[,]>();
+            var l = new object();
             for (int val = 0; val < m.GetLength(0); val++)
             {
                 if (invalidValues[val]) continue;
@@ -91,18 +92,18 @@ namespace OrderGroupsHackathon
                 // advance in board
                 if (j < i)
                 {
-                    boards.AddRange(GetAbelianBoards(m, i, j + 1));
+                    lock (l) { boards.AddRange(GetAbelianBoards(m, i, j + 1)); }
                 }
                 else // j == i
                 {
                     if (i < (m.GetLength(0) - 1))
                     {
-                        boards.AddRange(GetAbelianBoards(m, i + 1, 1));
+                        lock (l) { boards.AddRange(GetAbelianBoards(m, i + 1, 1)); }
                     }
                     else
                     {
                         if (!IsAbelianBoardAssociative(m)) continue;
-                        boards.Add(m);
+                        lock (l) { boards.Add(m); }
                     }
                 }
             }
@@ -131,8 +132,8 @@ namespace OrderGroupsHackathon
                 {
                     for (int k = 1; k < n; k++)
                     {
-                        if (IndexAbelianBoard(m,IndexAbelianBoard(m, i, j),k) 
-                            != IndexAbelianBoard(m,i,IndexAbelianBoard(m,j,k)))
+                        if (IndexAbelianBoard(m, IndexAbelianBoard(m, i, j), k)
+                            != IndexAbelianBoard(m, i, IndexAbelianBoard(m, j, k)))
                         {
                             return false;
                         }
@@ -200,7 +201,7 @@ namespace OrderGroupsHackathon
                         }
                     }
 
-                    if (IndexAbelianBoard(m1,m1row,m1col) != IndexAbelianBoard(m2,m2row,m2col))
+                    if (IndexAbelianBoard(m1, m1row, m1col) != IndexAbelianBoard(m2, m2row, m2col))
                     {
                         return false;
                     }
@@ -210,7 +211,7 @@ namespace OrderGroupsHackathon
             return true;
         }
 
-        static bool CompareAbelianBoards(int[,] m1, int[,] m2, IEnumerable<Dictionary<int,int>> permutations)
+        static bool CompareAbelianBoards(int[,] m1, int[,] m2, IEnumerable<Dictionary<int, int>> permutations)
         {
             // same size boards & both abelian
 
@@ -240,6 +241,11 @@ namespace OrderGroupsHackathon
         }
 
         static void Main(string[] args)
+        {
+            Riddle3();
+        }
+
+        private static void Riddle3()
         {
             int n = 8;
             Console.WriteLine("Getting boards");
@@ -273,9 +279,36 @@ namespace OrderGroupsHackathon
             }
         }
 
+        private static void CheckRanBoards()
+        {
+            int[,] b1 = { { 0, 1, 2, 3, 4, 5, 6, 7 }, { 1, 0, 3, 2, 5, 4, 7, 6 }, { 2, 3, 0, 1, 6, 7, 4, 5 }, { 3, 2, 1, 0, 7, 6, 5, 4 }, { 4, 5, 6, 7, 0, 1, 2, 3 }, { 5, 4, 7, 6, 1, 0, 3, 2 }, { 6, 7, 4, 5, 2, 3, 0, 1 }, { 7, 6, 5, 4, 3, 2, 1, 0 } };
+            int[,] b2 = { { 0, 1, 2, 3, 4, 5, 6, 7 }, { 1, 0, 3, 2, 5, 4, 7, 6 }, { 2, 3, 0, 1, 6, 7, 4, 5 }, { 3, 2, 1, 0, 7, 6, 5, 4 }, { 4, 5, 6, 7, 0, 2, 3, 1 }, { 5, 4, 7, 6, 2, 0, 1, 3 }, { 6, 7, 4, 5, 3, 1, 0, 2 }, { 7, 6, 5, 4, 1, 3, 2, 0 } };
+            int[,] b3 = { { 0, 1, 2, 3, 4, 5, 6, 7 }, { 1, 0, 3, 2, 5, 4, 7, 6 }, { 2, 3, 0, 1, 6, 7, 4, 5 }, { 3, 2, 1, 0, 7, 6, 5, 4 }, { 4, 5, 6, 7, 0, 1, 3, 2 }, { 5, 4, 7, 6, 1, 0, 2, 3 }, { 6, 7, 4, 5, 3, 2, 0, 1 }, { 7, 6, 5, 4, 2, 3, 1, 0 } };
+            int[,] b4 = { { 0, 1, 2, 3, 4, 5, 6, 7 }, { 1, 0, 3, 2, 5, 4, 7, 6 }, { 2, 3, 0, 1, 6, 7, 4, 5 }, { 3, 2, 1, 0, 7, 6, 5, 4 }, { 4, 5, 6, 7, 0, 3, 1, 2 }, { 5, 4, 7, 6, 3, 0, 2, 1 }, { 6, 7, 4, 5, 1, 2, 0, 3 }, { 7, 6, 5, 4, 2, 1, 3, 0 } };
+            int[,] b5 = { { 0, 1, 2, 3, 4, 5, 6, 7 }, { 1, 0, 3, 2, 5, 4, 7, 6 }, { 2, 3, 0, 1, 6, 7, 4, 5 }, { 3, 2, 1, 0, 7, 6, 5, 4 }, { 4, 5, 6, 7, 0, 2, 1, 3 }, { 5, 4, 7, 6, 2, 0, 3, 1 }, { 6, 7, 4, 5, 1, 3, 0, 2 }, { 7, 6, 5, 4, 3, 1, 2, 0 } };
+            int[,] b6 = { { 0, 1, 2, 3, 4, 5, 6, 7 }, { 1, 0, 3, 2, 5, 4, 7, 6 }, { 2, 3, 0, 1, 6, 7, 4, 5 }, { 3, 2, 1, 0, 7, 6, 5, 4 }, { 4, 5, 6, 7, 0, 3, 2, 1 }, { 5, 4, 7, 6, 3, 0, 1, 2 }, { 6, 7, 4, 5, 2, 1, 0, 3 }, { 7, 6, 5, 4, 1, 2, 3, 0 } };
+
+            Console.WriteLine(CompareAbelianBoards(b1, b2, StupidGetPermutations(8)));
+            Console.WriteLine(CompareAbelianBoards(b1, b3, StupidGetPermutations(8)));
+            Console.WriteLine(CompareAbelianBoards(b1, b4, StupidGetPermutations(8)));
+            Console.WriteLine(CompareAbelianBoards(b1, b5, StupidGetPermutations(8)));
+            Console.WriteLine(CompareAbelianBoards(b1, b6, StupidGetPermutations(8)));
+            Console.WriteLine(CompareAbelianBoards(b2, b3, StupidGetPermutations(8)));
+            Console.WriteLine(CompareAbelianBoards(b2, b4, StupidGetPermutations(8))); // T
+            Console.WriteLine(CompareAbelianBoards(b2, b5, StupidGetPermutations(8)));
+            Console.WriteLine(CompareAbelianBoards(b2, b6, StupidGetPermutations(8)));
+            Console.WriteLine(CompareAbelianBoards(b3, b4, StupidGetPermutations(8)));
+            Console.WriteLine(CompareAbelianBoards(b3, b5, StupidGetPermutations(8))); // T
+            Console.WriteLine(CompareAbelianBoards(b3, b6, StupidGetPermutations(8))); // T
+            Console.WriteLine(CompareAbelianBoards(b4, b5, StupidGetPermutations(8)));
+            Console.WriteLine(CompareAbelianBoards(b4, b6, StupidGetPermutations(8))); 
+            Console.WriteLine(CompareAbelianBoards(b5, b6, StupidGetPermutations(8))); // T
+
+        }
+
         private static IEnumerable<Dictionary<int, int>> GetPermutations(int n)
         {
-            var permutation = new Dictionary<int,int>(n);
+            var permutation = new Dictionary<int, int>(n);
             var values = new bool[n];
             var permutations = GetPermutations(permutation, 0, values);
             foreach (var subper in permutations)
@@ -295,7 +328,7 @@ namespace OrderGroupsHackathon
                     newperm[i] = j;
                     var newvalues = (bool[])values.Clone();
                     newvalues[j] = true;
-                    var permutations = GetPermutations(newperm, i+1, newvalues);
+                    var permutations = GetPermutations(newperm, i + 1, newvalues);
                     foreach (var subper in permutations)
                     {
                         yield return subper;
@@ -306,7 +339,7 @@ namespace OrderGroupsHackathon
 
         private static IEnumerable<Dictionary<int, int>> StupidGetPermutations(int n)
         {
-            var permutation = new Dictionary<int,int>(n);
+            var permutation = new Dictionary<int, int>(n);
             if (n == 3)
             {
                 for (int i = 0; i < n; i++)
@@ -318,7 +351,7 @@ namespace OrderGroupsHackathon
                         permutation[1] = j;
                         for (int k = 0; k < n; k++)
                         {
-                            if (k==i||k==j) continue;
+                            if (k == i || k == j) continue;
                             permutation[2] = k;
                             yield return permutation;
                         }
@@ -518,9 +551,9 @@ namespace OrderGroupsHackathon
                 for (int j = 0; j < m.GetLength(0); j++)
                 {
                     if (j < m.GetLength(0) - 1)
-                        Console.Write($"{m[i,j]} ");
+                        Console.Write($"{m[i, j]} ");
                     else
-                        Console.WriteLine($"{m[i,j]}");
+                        Console.WriteLine($"{m[i, j]}");
                 }
             }
         }
@@ -531,8 +564,8 @@ namespace OrderGroupsHackathon
             {
                 for (int j = 0; j < m.GetLength(0); j++)
                 {
-                    if (j < m.GetLength(0)-1)
-                        Console.Write($"{(j < i ? m[i,j].ToString() : m[j,i].ToString())} ");
+                    if (j < m.GetLength(0) - 1)
+                        Console.Write($"{(j < i ? m[i, j].ToString() : m[j, i].ToString())} ");
                     else
                         Console.WriteLine($"{(j < i ? m[i, j].ToString() : m[j, i].ToString())}");
                 }
